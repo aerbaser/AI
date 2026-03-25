@@ -1,0 +1,12 @@
+{
+  "name": "openclaw-engram-codex-proxy",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "OpenAI-compatible chat/completions proxy backed by codex exec for Engram memory extraction",
+  "scripts": {
+    "start": "node server.mjs",
+    "probe": "node test/probe-chat-completions.mjs"
+  }
+}
+

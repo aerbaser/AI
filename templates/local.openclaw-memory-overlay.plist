@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>local.openclaw-memory-overlay</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/python3</string>
+    <string>__OPENCLAW_HOME__/bin/apply-memory-overlay.py</string>
+    <string>--verify-fast</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>WatchPaths</key>
+  <array>
+    <string>/usr/local/lib/node_modules/@tobilu/qmd/package.json</string>
+    <string>__OPENCLAW_HOME__/extensions/openclaw-engram/package.json</string>
+    <string>/usr/local/lib/node_modules/openclaw/package.json</string>
+  </array>
+  <key>StandardOutPath</key>
+  <string>__OPENCLAW_HOME__/logs/memory-overlay-apply.stdout.log</string>
+  <key>StandardErrorPath</key>
+  <string>__OPENCLAW_HOME__/logs/memory-overlay-apply.stderr.log</string>
+</dict>
+</plist>
+

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>local.engram-codex-proxy</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/bin/node</string>
+    <string>__TOOLKIT_ROOT__/proxy/server.mjs</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PORT</key>
+    <string>__PROXY_PORT__</string>
+    <key>HOST</key>
+    <string>__PROXY_HOST__</string>
+    <key>MODEL_LABEL</key>
+    <string>__MODEL_LABEL__</string>
+    <key>CODEX_MODEL</key>
+    <string>__CODEX_MODEL__</string>
+    <key>PROXY_WORKDIR</key>
+    <string>__TOOLKIT_ROOT__/proxy/runtime</string>
+    <key>PATH</key>
+    <string>__PATH_DEFAULT__</string>
+  </dict>
+  <key>WorkingDirectory</key>
+  <string>__TOOLKIT_ROOT__/proxy</string>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>__OPENCLAW_HOME__/logs/engram-codex-proxy.log</string>
+  <key>StandardErrorPath</key>
+  <string>__OPENCLAW_HOME__/logs/engram-codex-proxy.log</string>
+</dict>
+</plist>
+
