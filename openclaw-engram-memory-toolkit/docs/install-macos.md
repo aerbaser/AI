@@ -12,8 +12,7 @@
 
 ```bash
 git clone https://github.com/aerbaser/AI.git
-cd AI
-git checkout openclaw-engram-memory-toolkit
+cd AI/openclaw-engram-memory-toolkit
 ```
 
 ## 2. Export required variables
