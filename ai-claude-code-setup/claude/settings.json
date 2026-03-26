@@ -30,7 +30,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/Users/admin/.claude/hooks/gsd-check-update.js\""
+            "command": "node \"\"$HOME/.claude/hooks/gsd-check-update.js\""
           }
         ]
       }
@@ -41,7 +41,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/Users/admin/.claude/hooks/gsd-context-monitor.js\"",
+            "command": "node \"\"$HOME/.claude/hooks/gsd-context-monitor.js\"",
             "timeout": 10
           }
         ]
@@ -53,7 +53,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/Users/admin/.claude/hooks/gsd-prompt-guard.js\"",
+            "command": "node \"\"$HOME/.claude/hooks/gsd-prompt-guard.js\"",
             "timeout": 5
           }
         ]
@@ -62,6 +62,9 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "node \"/Users/admin/.claude/hooks/gsd-statusline.js\""
+    "command": "node \"$HOME/.claude/hooks/gsd-statusline.js\""
+  },
+  "memory": {
+    "enabled": false
   }
 }

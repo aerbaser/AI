@@ -1,24 +1,20 @@
-# Workspace Layout
+# Workspace Settings
 
-This setup separates projects by lane while keeping one shared Claude/GSD control plane.
+Files in this folder relate to the shared `~/Desktop/AI/` workspace.
 
-## Root
+## workspace/settings.json
 
-```text
-~/Desktop/AI/
-├── .claude/
-├── Web2/
-└── Web3/
+**Source:** `~/Desktop/AI/.claude/settings.json`  
+**Purpose:** GSD hooks for all sessions opened inside the AI workspace
+
+This is the workspace-level Claude settings file. It uses **relative paths** for hooks (e.g. `node .claude/hooks/gsd-check-update.js`) and is effective when Claude Code is opened from anywhere inside `~/Desktop/AI/`.
+
+The global `~/.claude/settings.json` has the same hooks with absolute paths — both are needed.
+
+## How to use
+
+```bash
+cp ai-claude-code-setup/workspace/settings.json ~/Desktop/AI/.claude/settings.json
 ```
 
-## Why this layout works
-
-- `~/Desktop/AI/.claude/` holds shared hooks and status line config.
-- `~/Desktop/AI/Web2/` holds Web2 repos and the `codebase-memory` MCP config.
-- `~/Desktop/AI/Web3/` holds Web3 repos and the `serena` MCP config.
-- Each project can still carry its own `.planning/` folder for GSD.
-
-## Included snapshot files
-
-- `settings.json` — shared workspace Claude hooks config
-- `AI-folder-structure.md` — visual structure reference
+After this, open Claude Code from inside `~/Desktop/AI/` and GSD hooks will activate.

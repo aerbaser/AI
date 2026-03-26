@@ -1,60 +1,59 @@
 # Claude Code Plugins
 
-Installed plugin snapshot from this Mac.
+Snapshot of installed plugins and how to install them.
 
-## Installed plugins
+## Plugins in use
 
-- `typescript-lsp@claude-plugins-official` (v1.0.0)
-- `pyright-lsp@claude-plugins-official` (v1.0.0)
-- `rust-analyzer-lsp@claude-plugins-official` (v1.0.0)
-- `gopls-lsp@claude-plugins-official` (v1.0.0)
-- `solidity-lsp@local-lsp` (v1.0.0)
-- `flutter-lsp@local-lsp` (v1.0.0)
-- `claude-mem@thedotmack` (v10.6.2)
+| Plugin | Marketplace | Version | Purpose |
+|--------|-------------|---------|---------|
+| `typescript-lsp` | `claude-plugins-official` | 1.0.0 | TypeScript LSP |
+| `pyright-lsp` | `claude-plugins-official` | 1.0.0 | Python LSP |
+| `rust-analyzer-lsp` | `claude-plugins-official` | 1.0.0 | Rust LSP |
+| `gopls-lsp` | `claude-plugins-official` | 1.0.0 | Go LSP |
+| `solidity-lsp` | `local-lsp` | 1.0.0 | Solidity LSP (local marketplace) |
+| `flutter-lsp` | `local-lsp` | 1.0.0 | Flutter/Dart LSP (local marketplace) |
+| `claude-mem` | `thedotmack` | 10.6.2 | **Primary memory system** |
 
 ## Install commands
 
 ```bash
-# Official marketplace LSP plugins
+# Official LSP plugins (no setup needed)
 claude plugins install typescript-lsp@claude-plugins-official
 claude plugins install pyright-lsp@claude-plugins-official
 claude plugins install rust-analyzer-lsp@claude-plugins-official
 claude plugins install gopls-lsp@claude-plugins-official
 
-# Local marketplace plugins (requires ~/.claude/plugins-marketplace)
+# Solidity + Flutter: local marketplace
+# Requires ~/.claude/plugins-marketplace/ with solidity-lsp/ and flutter-lsp/ dirs
 claude plugins marketplace add ~/.claude/plugins-marketplace
 claude plugins install solidity-lsp@local-lsp
 claude plugins install flutter-lsp@local-lsp
 
-# Community plugin
+# Primary memory plugin
 claude plugins marketplace add thedotmack/claude-mem
 claude plugins install claude-mem@thedotmack
 ```
-
-## Notes
-
-- Official LSP plugins are sourced from `claude-plugins-official`.
-- `local-lsp` points to `~/.claude/plugins-marketplace` on this machine.
-- `claude-mem` comes from the `thedotmack/claude-mem` marketplace.
 
 ---
 
-## Memory: claude-mem (primary)
+## claude-mem — primary memory (required)
 
-**claude-mem** is the primary memory system for this setup. Engram (OpenClaw) is optional/separate.
+claude-mem hooks into every Claude Code session and automatically extracts + injects memory.
 
-### Install
+### How it works
+- `SessionStart` hook → injects N recent session memories into context
+- `PostToolUse` hook → extracts new facts after each tool use
+- Data: SQLite (`~/.claude-mem/claude-mem.db`) + ChromaDB vector index (`~/.claude-mem/chroma/`)
 
+### After install: restart from fresh terminal
 ```bash
-claude plugins marketplace add thedotmack/claude-mem
-claude plugins install claude-mem@thedotmack
+# claude-mem hooks only activate in new sessions
+# Open a new terminal, then:
+claude
 ```
 
-Requires a fresh terminal restart after install so hooks activate.
-
-### Config
-
-Settings live at `~/.claude-mem/settings.json`. Key values used in this setup:
+### Config file: `~/.claude-mem/settings.json`
+See `claude-mem-settings.json` in this repo for a full snapshot. Key settings:
 
 ```json
 {
@@ -62,20 +61,15 @@ Settings live at `~/.claude-mem/settings.json`. Key values used in this setup:
   "CLAUDE_MEM_PROVIDER": "claude",
   "CLAUDE_MEM_CLAUDE_AUTH_METHOD": "cli",
   "CLAUDE_MEM_MODE": "code",
-  "CLAUDE_MEM_CONTEXT_OBSERVATIONS": "50",
   "CLAUDE_MEM_CONTEXT_SESSION_COUNT": "10",
   "CLAUDE_MEM_CHROMA_ENABLED": "true",
-  "CLAUDE_MEM_CHROMA_MODE": "local",
-  "CLAUDE_MEM_FOLDER_CLAUDEMD_ENABLED": "false",
-  "CLAUDE_MEM_SKIP_TOOLS": "ListMcpResourcesTool,SlashCommand,Skill,TodoWrite,AskUserQuestion"
+  "CLAUDE_MEM_CHROMA_MODE": "local"
 }
 ```
 
-Data stored at `~/.claude-mem/` (SQLite + Chroma vector DB).
+### ⚠️ Disable Claude Code's built-in memory
 
-### Disable Claude Code's built-in local memory
-
-Claude Code has its own built-in memory that conflicts with claude-mem. Disable it in `~/.claude/settings.json`:
+Claude Code has its own built-in memory that conflicts with claude-mem. The `settings.json` in this repo already has it disabled:
 
 ```json
 {
@@ -85,9 +79,9 @@ Claude Code has its own built-in memory that conflicts with claude-mem. Disable 
 }
 ```
 
-Or via CLI:
+If you need to set it manually:
 ```bash
 claude config set --global memory.enabled false
 ```
 
-> ⚠️ Without disabling the built-in memory, you'll get duplicate/conflicting memory writes from both systems.
+Without this, both systems write simultaneously → duplicate/conflicting memory.

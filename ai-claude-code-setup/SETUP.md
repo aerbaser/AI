@@ -1,152 +1,259 @@
 # Setup Guide
 
-Step-by-step install guide for the Claude Code environment captured in this repository.
+Step-by-step install for the full Claude Code AI development environment.
 
-## 1. Install Claude Code
+---
+
+## Prerequisites
+
+- macOS
+- Node.js 18+ (`brew install node`)
+- Python 3.10+ (`brew install python`)
+- Go (`brew install go`) — for gopls
+- `brew` (Homebrew)
+
+---
+
+## Step 1 — Install Claude Code
 
 ```bash
 npm install -g @anthropic-ai/claude-code
+claude --version
 ```
 
-## 2. Create the workspace layout
+---
+
+## Step 2 — Create workspace layout
 
 ```bash
 mkdir -p ~/Desktop/AI/{Web2,Web3,.claude}
 mkdir -p ~/.claude
 ```
 
-## 3. Install GSD
+---
+
+## Step 3 — Copy global Claude config
+
+```bash
+cp ai-claude-code-setup/claude/CLAUDE.md ~/.claude/CLAUDE.md
+```
+
+Review `claude/CLAUDE.md` — it sets defaults for Context7 and working style.
+
+---
+
+## Step 4 — Copy Claude settings (plugins + hooks + memory off)
+
+```bash
+cp ai-claude-code-setup/claude/settings.json ~/.claude/settings.json
+```
+
+> ⚠️ The settings file has `"memory": { "enabled": false }`. This is intentional — it disables Claude Code's built-in memory so it doesn't conflict with claude-mem.
+
+> ⚠️ Hook paths use `$HOME` — Claude Code requires absolute paths. After copy, run:
+```bash
+# Replace $HOME with your actual home dir in the hooks
+sed -i '' "s|\$HOME|$HOME|g" ~/.claude/settings.json
+```
+
+---
+
+## Step 5 — Install GSD
+
+GSD (get-shit-done-cc) installs into the project directory and creates hooks in `~/.claude/hooks/` automatically.
 
 ```bash
 cd ~/Desktop/AI
 npx get-shit-done-cc --claude --local
 ```
 
-This machine is running GSD version `1.29.0`.
+This installs:
+- `~/Desktop/AI/.claude/` — GSD workspace with hooks, agents, commands
+- `~/.claude/hooks/*.js` — GSD hooks (SessionStart, PreToolUse, PostToolUse, statusLine)
+- `~/.claude/commands/gsd/` — 57 GSD slash commands
 
-## 4. Configure global `CLAUDE.md`
+> ✅ After this, `workspace/settings.json` in this repo matches `~/Desktop/AI/.claude/settings.json` exactly.
 
-Copy `claude/CLAUDE.md` to:
-
+Copy the workspace-level settings:
 ```bash
-cp ai-claude-code-setup/claude/CLAUDE.md ~/.claude/CLAUDE.md
+cp ai-claude-code-setup/workspace/settings.json ~/Desktop/AI/.claude/settings.json
 ```
 
-## 5. Configure Claude settings
+---
 
-Copy `claude/settings.json` to:
-
-```bash
-cp ai-claude-code-setup/claude/settings.json ~/.claude/settings.json
-```
-
-Then review:
-- hooks
-- enabled plugins
-- status line
-- any redacted tokens or keys
-
-## 6. Install LSP and helper plugins
-
-See `claude/plugins.md`, then run:
+## Step 6 — Install LSP and memory plugins
 
 ```bash
+# Official LSP plugins
 claude plugins install typescript-lsp@claude-plugins-official
 claude plugins install pyright-lsp@claude-plugins-official
 claude plugins install rust-analyzer-lsp@claude-plugins-official
 claude plugins install gopls-lsp@claude-plugins-official
+
+# Local marketplace (Solidity, Flutter)
+# First create ~/.claude/plugins-marketplace with solidity-lsp and flutter-lsp plugin dirs
+# (download from their repos or copy from another machine)
 claude plugins marketplace add ~/.claude/plugins-marketplace
 claude plugins install solidity-lsp@local-lsp
 claude plugins install flutter-lsp@local-lsp
+
+# Memory plugin (primary memory system)
 claude plugins marketplace add thedotmack/claude-mem
 claude plugins install claude-mem@thedotmack
 ```
 
-## 7. Configure MCP servers
+**claude-mem requires a fresh terminal restart after install** — hooks only activate in new sessions.
 
-- Copy `mcp/global.json` into the `mcpServers` section of `~/.claude.json`
-- Copy `mcp/web2.json` to `~/Desktop/AI/Web2/.mcp.json`
-- Copy `mcp/web3.json` to `~/Desktop/AI/Web3/.mcp.json`
-
-Details: `mcp/README.md`
-
-## 8. Set required environment variables
-
-Add the required variables from `env/README.md` to both:
-- `~/.zshrc`
-- `~/.zprofile`
-
-Reload your shell:
-
+Configure claude-mem:
 ```bash
-source ~/.zshrc
-source ~/.zprofile
+# Copy settings snapshot (review and adjust)
+cp ai-claude-code-setup/claude/claude-mem-settings.json ~/.claude-mem/settings.json
+# Or configure interactively:
+claude mcp settings claude-mem
 ```
 
-## 9. Configure shared workspace hooks
-
-Copy `workspace/settings.json` to:
-
-```bash
-mkdir -p ~/Desktop/AI/.claude
-cp ai-claude-code-setup/workspace/settings.json ~/Desktop/AI/.claude/settings.json
-```
-
-This enables shared `SessionStart`, `PreToolUse`, `PostToolUse`, and `statusLine` hooks for the AI workspace.
-
-## 10. Configure GSD per project
-
-Use `gsd/project-config-example.json` as a starting point for project-level planning config:
-
-```bash
-mkdir -p ~/Desktop/AI/Web3/<project>/.planning
-cp ai-claude-code-setup/gsd/project-config-example.json ~/Desktop/AI/Web3/<project>/.planning/config.json
-```
-
-## Verification checklist
-
-- `claude --version`
-- `claude plugins list`
-- `cat ~/Desktop/AI/Web2/.mcp.json`
-- `cat ~/Desktop/AI/Web3/.mcp.json`
-- `test -f ~/.claude/CLAUDE.md && echo ok`
-- `test -f ~/.claude/settings.json && echo ok`
-- `test -f ~/Desktop/AI/.claude/settings.json && echo ok`
-
-## Included files
-
-- `claude/` — global Claude config snapshot
-- `mcp/` — MCP server definitions
-- `gsd/` — GSD global and project config snapshot
-- `workspace/` — shared workspace-level Claude settings
-- `env/` — required environment variables and tool install list
+Key settings in `claude-mem-settings.json`:
+- `CLAUDE_MEM_MODEL` — model for memory extraction (e.g. `claude-sonnet-4-6`)
+- `CLAUDE_MEM_MODE` — `code` for development workflows
+- `CLAUDE_MEM_CHROMA_ENABLED` — `true` for vector search (requires ChromaDB running)
+- `CLAUDE_MEM_CONTEXT_SESSION_COUNT` — how many past sessions to inject
 
 ---
 
-## Memory: OpenClaw + Engram setup
+## Step 7 — Set up MCP servers
 
-This environment uses **OpenClaw** as the AI agent runtime with **Engram** as the persistent memory backend. This is separate from Claude Code itself — it provides long-term memory across sessions.
+### Web2 projects (codebase-memory)
 
-### What it is
+Install binary:
+```bash
+# Download from https://github.com/shaneholloman/codebase-memory-mcp/releases
+# or build from source, place at:
+~/.local/bin/codebase-memory-mcp
+chmod +x ~/.local/bin/codebase-memory-mcp
+```
 
-- **OpenClaw** — self-hosted AI agent gateway (Node.js daemon, runs locally)
-- **Engram** (`@joshuaswarren/openclaw-engram`) — memory plugin for OpenClaw
-- **Engram MCP** — exposes memory over HTTP at `http://127.0.0.1:4318/mcp` so Claude Code can read/write long-term memory
+Copy config:
+```bash
+cp ai-claude-code-setup/mcp/web2.json ~/Desktop/AI/Web2/.mcp.json
+```
 
-### Install OpenClaw
+### Web3 projects (Serena)
+
+Install uvx:
+```bash
+pip install uv
+# uvx is available as uv tool run or install uv globally
+pip install uvx   # or: curl -LsSf https://astral.sh/uv/install.sh | sh
+# Binary should be at ~/.local/bin/uvx
+```
+
+Copy config:
+```bash
+cp ai-claude-code-setup/mcp/web3.json ~/Desktop/AI/Web3/.mcp.json
+```
+
+### Engram MCP (optional — OpenClaw memory)
+
+Only needed if you're running OpenClaw. Skip otherwise.
+
+See **Memory section** below for full OpenClaw + Engram setup.
+
+If setting up Engram:
+```bash
+# Get token after Engram is running:
+openclaw engram access token
+
+# Add to ~/.zshrc and ~/.zprofile:
+export OPENCLAW_ENGRAM_ACCESS_TOKEN=<your_token>
+```
+
+Copy config to `~/.claude.json` (merge into existing `mcpServers`):
+```bash
+# Contents of mcp/global.json go into ~/.claude.json under "mcpServers"
+```
+
+---
+
+## Step 8 — Set environment variables
+
+Add to `~/.zshrc` AND `~/.zprofile`:
+
+```bash
+export ANTHROPIC_API_KEY=<your_anthropic_key>
+export OPENCLAW_ENGRAM_ACCESS_TOKEN=<your_token>   # only if using Engram
+```
+
+Reload:
+```bash
+source ~/.zshrc && source ~/.zprofile
+```
+
+> ⚠️ Claude Code must be launched from a terminal that has sourced these files. If memory/MCP isn't working, restart from a fresh terminal.
+
+---
+
+## Step 9 — Install required language tools
+
+```bash
+# TypeScript LSP
+npm install -g typescript typescript-language-server
+
+# Python LSP
+npm install -g pyright
+
+# Go LSP
+go install golang.org/x/tools/gopls@latest
+
+# Rust analyzer
+# macOS: brew install rust-analyzer
+# or: rustup component add rust-analyzer
+
+# Flutter / Dart
+brew install --cask flutter
+```
+
+---
+
+## Step 10 — Configure GSD per project
+
+For each project that uses GSD:
+
+```bash
+mkdir -p ~/Desktop/AI/Web3/<project>/.planning
+cp ai-claude-code-setup/gsd/project-config-example.json \
+   ~/Desktop/AI/Web3/<project>/.planning/config.json
+```
+
+Edit the config — key fields:
+- `verification_commands` — list of commands to run after each phase (forge, tsc, tests, etc.)
+- `mode` — `yolo` for autonomous, `discuss` for interactive
+- `git.isolation` — `worktree` for isolated branch per phase
+
+Start GSD in project dir:
+```bash
+cd ~/Desktop/AI/Web3/<project>
+/gsd:plan "describe what to build"
+```
+
+---
+
+## Memory: OpenClaw + Engram (optional)
+
+OpenClaw is a separate AI agent runtime. Engram is its memory plugin. Together they provide persistent memory across Claude Code sessions via MCP.
+
+This is separate from claude-mem. Use if you want:
+- Memory shared across multiple AI agents (not just Claude Code)
+- Memory accessible via HTTP MCP from any client
+
+### Install
 
 ```bash
 npm install -g openclaw
 openclaw setup
-```
-
-### Install Engram plugin
-
-```bash
 openclaw plugins install @joshuaswarren/openclaw-engram
 ```
 
-Configure in `~/.openclaw/openclaw.json`:
+Configure `~/.openclaw/openclaw.json`:
 ```json
 {
   "plugins": {
@@ -157,86 +264,68 @@ Configure in `~/.openclaw/openclaw.json`:
 }
 ```
 
-### Start Engram MCP HTTP server
+### Start Engram MCP
 
 ```bash
 openclaw engram access http-serve
+# Runs at http://127.0.0.1:4318/mcp
 ```
 
-Or use a LaunchAgent for persistence (recommended on macOS). Create `~/Library/LaunchAgents/com.openclaw.engram-mcp.plist`:
-
-```xml
+For persistence (macOS LaunchAgent):
+```bash
+cat > ~/Library/LaunchAgents/com.openclaw.engram-mcp.plist << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>Label</key>
-  <string>com.openclaw.engram-mcp</string>
+  <key>Label</key><string>com.openclaw.engram-mcp</string>
   <key>ProgramArguments</key>
   <array>
     <string>/usr/local/bin/openclaw</string>
-    <string>engram</string>
-    <string>access</string>
-    <string>http-serve</string>
+    <string>engram</string><string>access</string><string>http-serve</string>
   </array>
-  <key>RunAtLoad</key>
-  <true/>
-  <key>KeepAlive</key>
-  <true/>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
 </dict>
 </plist>
-```
-
-```bash
+EOF
 launchctl load ~/Library/LaunchAgents/com.openclaw.engram-mcp.plist
 ```
 
-### Connect Claude Code to Engram
-
-Add to `~/.claude.json` under `mcpServers` (see `mcp/global.json`):
-
-```json
-{
-  "mcpServers": {
-    "engram": {
-      "url": "http://127.0.0.1:4318/mcp",
-      "headers": {
-        "Authorization": "Bearer <YOUR_OPENCLAW_ENGRAM_ACCESS_TOKEN>"
-      },
-      "type": "http"
-    }
-  }
-}
-```
-
-Get your token: `openclaw engram access token`
-
-Set env var:
+Verify:
 ```bash
-export OPENCLAW_ENGRAM_ACCESS_TOKEN=<your_token>
+openclaw status         # → Memory: enabled (plugin openclaw-engram)
+openclaw engram doctor  # → all checks green
 ```
 
-Restart Claude Code from a fresh terminal after setting env vars.
+---
 
-### Verify
+## Verification checklist
 
 ```bash
-openclaw status         # Memory: enabled (plugin openclaw-engram)
-openclaw engram doctor  # All checks should pass
+claude --version                                        # Claude Code installed
+claude plugins list                                     # claude-mem, LSPs all enabled
+cat ~/.claude/settings.json | grep '"enabled": false'  # memory disabled ✓
+cat ~/.claude/CLAUDE.md                                 # instructions present
+cat ~/Desktop/AI/Web2/.mcp.json                         # codebase-memory config
+cat ~/Desktop/AI/Web3/.mcp.json                         # serena config
+ls ~/Desktop/AI/.claude/hooks/                          # GSD hooks present
+test -f ~/.gsd/agent/settings.json && echo ok           # GSD agent config
 ```
 
-### QMD embeddings (optional — Qwen3 for multilingual)
+---
 
-For better multilingual recall, override the embedding model:
+## What is auto-generated vs what to copy manually
 
-```bash
-# Create wrapper
-cat > ~/.openclaw/bin/qmd-qwen3 << 'EOF'
-#!/bin/bash
-export QMD_EMBED_MODEL="hf:Qwen/Qwen3-Embedding-0.6B-GGUF/Qwen3-Embedding-0.6B-Q8_0.gguf"
-exec qmd "$@"
-EOF
-chmod +x ~/.openclaw/bin/qmd-qwen3
-```
-
-Then point Engram's `qmdPath` to the wrapper in OpenClaw config.
+| Item | How it appears |
+|------|---------------|
+| `~/.claude/hooks/*.js` | **Auto-installed by GSD** — do not copy manually |
+| `~/.claude/commands/gsd/` | **Auto-installed by GSD** — symlinked |
+| `~/.claude-mem/` (all) | **Auto-created by claude-mem** on first run |
+| `~/.claude/settings.json` | **Copy from repo** → `claude/settings.json` |
+| `~/.claude/CLAUDE.md` | **Copy from repo** → `claude/CLAUDE.md` |
+| `~/Desktop/AI/Web2/.mcp.json` | **Copy from repo** → `mcp/web2.json` |
+| `~/Desktop/AI/Web3/.mcp.json` | **Copy from repo** → `mcp/web3.json` |
+| `~/Desktop/AI/.claude/settings.json` | **Copy from repo** → `workspace/settings.json` |
+| `~/.gsd/agent/settings.json` | **Copy from repo** → `gsd/settings.json` |
+| `.planning/config.json` | **Copy from repo** → `gsd/project-config-example.json` |

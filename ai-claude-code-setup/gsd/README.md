@@ -1,39 +1,87 @@
-# GSD Setup
+# GSD — get-shit-done-cc
 
-This machine uses **get-shit-done-cc** as the autonomous delivery workflow layer.
+Autonomous multi-phase development workflow for Claude Code. GSD turns Claude into a structured coding agent that plans → executes → verifies in phases.
 
-## Snapshot
+## Version
 
-- Version: `1.29.0`
-- Settings file: `gsd/settings.json`
-- Default provider: `anthropic`
-- Default model: `claude-sonnet-4-6`
-- Default thinking level: `high`
-- Quiet startup: enabled
+`1.29.0` (installed on this machine)
 
 ## Install
 
 ```bash
-cd <project>
+# Run from your project's workspace root (e.g. ~/Desktop/AI)
+cd ~/Desktop/AI
 npx get-shit-done-cc --claude --local
 ```
 
-## Files in this folder
+This creates:
+- `~/Desktop/AI/.claude/` — GSD workspace
+- `~/Desktop/AI/.claude/hooks/` — hook scripts (SessionStart, PreToolUse, PostToolUse, statusLine)
+- `~/Desktop/AI/.claude/commands/gsd/` — 57 slash commands
+- `~/.gsd/agent/settings.json` — global agent config
+- `~/.claude/hooks/*.js` — hooks registered in Claude Code global settings
 
-- `settings.json` — global GSD agent settings from `~/.gsd/agent/settings.json`
-- `project-config-example.json` — example project planning config from a live Web3 project
+## Global agent config
 
-## Typical usage
+`~/.gsd/agent/settings.json` (see `settings.json` in this folder):
 
-1. Install GSD in the project.
-2. Keep shared Claude hooks in `~/Desktop/AI/.claude/settings.json`.
-3. Add project planning config under `.planning/config.json`.
-4. Reuse the example config in this folder as a baseline.
+```json
+{
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-sonnet-4-6",
+  "defaultThinkingLevel": "high",
+  "quietStartup": true,
+  "collapseChangelog": true
+}
+```
 
-## Example project config features
+## Per-project config
 
-- balanced model profile
-- parallelization enabled
-- verifier / plan-check / research enabled
-- auto-fix enabled for verification
-- Web3 verification commands such as `forge test` and `slither .`
+Each project gets `.planning/config.json`. See `project-config-example.json` for a full example.
+
+Key fields:
+```json
+{
+  "mode": "yolo",                    // "yolo" = autonomous, "discuss" = interactive
+  "verification_commands": [...],    // run after each phase (tests, linters, etc.)
+  "verification_auto_fix": true,     // auto-retry on failure
+  "verification_max_retries": 2,
+  "git": {
+    "isolation": "worktree"          // isolated git worktree per phase
+  }
+}
+```
+
+## Slash commands
+
+After install, available as `/gsd:*` in Claude Code:
+
+```
+/gsd:plan "describe what to build"    # creates phased plan
+/gsd:execute-phase 1                  # executes phase 1
+/gsd:autonomous                       # run all phases without stopping
+/gsd:status                           # show current state
+/gsd:verify                           # run verification commands
+```
+
+## Hooks
+
+GSD installs 4 hooks in `~/.claude/hooks/`:
+
+| Hook | Trigger | Purpose |
+|------|---------|---------|
+| `gsd-check-update.js` | SessionStart | Check for GSD updates |
+| `gsd-context-monitor.js` | PostToolUse | Warn when context is filling up |
+| `gsd-prompt-guard.js` | PreToolUse (Write/Edit) | Detect prompt injection in .planning/ |
+| `gsd-statusline.js` | statusLine | Show model, task, context % in status bar |
+
+> ⚠️ These are auto-installed by GSD. Do not copy them manually — they'll be overwritten on GSD update.
+
+## Workspace hooks vs global hooks
+
+| File | Location | Scope |
+|------|----------|-------|
+| `workspace/settings.json` | `~/Desktop/AI/.claude/settings.json` | All sessions in AI workspace |
+| `claude/settings.json` | `~/.claude/settings.json` | All Claude Code sessions globally |
+
+Both reference the same hook scripts. The workspace-level file uses relative paths.
