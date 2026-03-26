@@ -36,3 +36,58 @@ claude plugins install claude-mem@thedotmack
 - Official LSP plugins are sourced from `claude-plugins-official`.
 - `local-lsp` points to `~/.claude/plugins-marketplace` on this machine.
 - `claude-mem` comes from the `thedotmack/claude-mem` marketplace.
+
+---
+
+## Memory: claude-mem (primary)
+
+**claude-mem** is the primary memory system for this setup. Engram (OpenClaw) is optional/separate.
+
+### Install
+
+```bash
+claude plugins marketplace add thedotmack/claude-mem
+claude plugins install claude-mem@thedotmack
+```
+
+Requires a fresh terminal restart after install so hooks activate.
+
+### Config
+
+Settings live at `~/.claude-mem/settings.json`. Key values used in this setup:
+
+```json
+{
+  "CLAUDE_MEM_MODEL": "claude-sonnet-4-6",
+  "CLAUDE_MEM_PROVIDER": "claude",
+  "CLAUDE_MEM_CLAUDE_AUTH_METHOD": "cli",
+  "CLAUDE_MEM_MODE": "code",
+  "CLAUDE_MEM_CONTEXT_OBSERVATIONS": "50",
+  "CLAUDE_MEM_CONTEXT_SESSION_COUNT": "10",
+  "CLAUDE_MEM_CHROMA_ENABLED": "true",
+  "CLAUDE_MEM_CHROMA_MODE": "local",
+  "CLAUDE_MEM_FOLDER_CLAUDEMD_ENABLED": "false",
+  "CLAUDE_MEM_SKIP_TOOLS": "ListMcpResourcesTool,SlashCommand,Skill,TodoWrite,AskUserQuestion"
+}
+```
+
+Data stored at `~/.claude-mem/` (SQLite + Chroma vector DB).
+
+### Disable Claude Code's built-in local memory
+
+Claude Code has its own built-in memory that conflicts with claude-mem. Disable it in `~/.claude/settings.json`:
+
+```json
+{
+  "memory": {
+    "enabled": false
+  }
+}
+```
+
+Or via CLI:
+```bash
+claude config set --global memory.enabled false
+```
+
+> ⚠️ Without disabling the built-in memory, you'll get duplicate/conflicting memory writes from both systems.
