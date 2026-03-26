@@ -22,3 +22,10 @@ Install the following tools to reproduce this environment.
   - `brew install --cask flutter`
 - Hammerspoon
   - `brew install --cask hammerspoon`
+
+## Memory / Agent Runtime
+
+- **OpenClaw** — `npm install -g openclaw`
+- **Engram plugin** — `openclaw plugins install @joshuaswarren/openclaw-engram`
+- **QMD** — installed automatically by Engram; for Qwen3 embeddings set `QMD_EMBED_MODEL`
+- **lossless-claw** (optional, context compaction) — `openclaw plugins install @martian-engineering/lossless-claw`

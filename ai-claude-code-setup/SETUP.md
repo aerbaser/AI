@@ -120,3 +120,123 @@ cp ai-claude-code-setup/gsd/project-config-example.json ~/Desktop/AI/Web3/<proje
 - `gsd/` — GSD global and project config snapshot
 - `workspace/` — shared workspace-level Claude settings
 - `env/` — required environment variables and tool install list
+
+---
+
+## Memory: OpenClaw + Engram setup
+
+This environment uses **OpenClaw** as the AI agent runtime with **Engram** as the persistent memory backend. This is separate from Claude Code itself — it provides long-term memory across sessions.
+
+### What it is
+
+- **OpenClaw** — self-hosted AI agent gateway (Node.js daemon, runs locally)
+- **Engram** (`@joshuaswarren/openclaw-engram`) — memory plugin for OpenClaw
+- **Engram MCP** — exposes memory over HTTP at `http://127.0.0.1:4318/mcp` so Claude Code can read/write long-term memory
+
+### Install OpenClaw
+
+```bash
+npm install -g openclaw
+openclaw setup
+```
+
+### Install Engram plugin
+
+```bash
+openclaw plugins install @joshuaswarren/openclaw-engram
+```
+
+Configure in `~/.openclaw/openclaw.json`:
+```json
+{
+  "plugins": {
+    "slots": {
+      "memory": "openclaw-engram"
+    }
+  }
+}
+```
+
+### Start Engram MCP HTTP server
+
+```bash
+openclaw engram access http-serve
+```
+
+Or use a LaunchAgent for persistence (recommended on macOS). Create `~/Library/LaunchAgents/com.openclaw.engram-mcp.plist`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.openclaw.engram-mcp</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/bin/openclaw</string>
+    <string>engram</string>
+    <string>access</string>
+    <string>http-serve</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+</dict>
+</plist>
+```
+
+```bash
+launchctl load ~/Library/LaunchAgents/com.openclaw.engram-mcp.plist
+```
+
+### Connect Claude Code to Engram
+
+Add to `~/.claude.json` under `mcpServers` (see `mcp/global.json`):
+
+```json
+{
+  "mcpServers": {
+    "engram": {
+      "url": "http://127.0.0.1:4318/mcp",
+      "headers": {
+        "Authorization": "Bearer <YOUR_OPENCLAW_ENGRAM_ACCESS_TOKEN>"
+      },
+      "type": "http"
+    }
+  }
+}
+```
+
+Get your token: `openclaw engram access token`
+
+Set env var:
+```bash
+export OPENCLAW_ENGRAM_ACCESS_TOKEN=<your_token>
+```
+
+Restart Claude Code from a fresh terminal after setting env vars.
+
+### Verify
+
+```bash
+openclaw status         # Memory: enabled (plugin openclaw-engram)
+openclaw engram doctor  # All checks should pass
+```
+
+### QMD embeddings (optional — Qwen3 for multilingual)
+
+For better multilingual recall, override the embedding model:
+
+```bash
+# Create wrapper
+cat > ~/.openclaw/bin/qmd-qwen3 << 'EOF'
+#!/bin/bash
+export QMD_EMBED_MODEL="hf:Qwen/Qwen3-Embedding-0.6B-GGUF/Qwen3-Embedding-0.6B-Q8_0.gguf"
+exec qmd "$@"
+EOF
+chmod +x ~/.openclaw/bin/qmd-qwen3
+```
+
+Then point Engram's `qmdPath` to the wrapper in OpenClaw config.

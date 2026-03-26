@@ -17,3 +17,9 @@ export OPENCLAW_ENGRAM_ACCESS_TOKEN=<YOUR_TOKEN_HERE>
 export ANTHROPIC_API_KEY=<YOUR_TOKEN_HERE>
 export CONTEXT7_API_KEY=<YOUR_TOKEN_HERE>
 ```
+
+## OpenClaw / Engram specific
+
+- `OPENCLAW_ENGRAM_ACCESS_TOKEN` — bearer token for Engram MCP HTTP server
+  - Get with: `openclaw engram access token`
+  - Required for Claude Code to access long-term memory

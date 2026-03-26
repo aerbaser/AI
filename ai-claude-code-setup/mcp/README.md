@@ -31,3 +31,27 @@ This environment uses three MCP layers.
 - `global.json` contains only the `mcpServers` section extracted from `~/.claude.json`.
 - Secret-bearing values are redacted when necessary.
 - Web2 and Web3 MCP files are directory-specific and meant to live at the workspace root for each lane.
+
+---
+
+## Memory architecture overview
+
+```
+Claude Code session
+       │
+       ▼
+  Engram MCP (http://127.0.0.1:4318/mcp)
+       │
+       ▼
+  OpenClaw + Engram plugin
+       │
+       ▼
+  QMD (local vector index, Qwen3 embeddings)
+       │
+       ▼
+  ~/.openclaw/workspace/memory/local/
+```
+
+- Session memory is persisted across restarts
+- Works offline (local embeddings, no external API needed for memory)
+- Engram token rotates — update `OPENCLAW_ENGRAM_ACCESS_TOKEN` if memory stops working
