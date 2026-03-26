@@ -24,13 +24,19 @@ brew install go
 npm install -g @anthropic-ai/claude-code
 ```
 
-## GSD (get-shit-done-cc)
+## GSD2 (primary workflow — gsd-pi)
 
 ```bash
-# Run from your AI project root
+npm install -g gsd-pi@latest
+gsd --version   # v2.50.0+
+```
+
+## GSD v1 (Claude Code hooks — get-shit-done-cc)
+
+```bash
+# Run from your AI project root (installs hooks + slash commands)
 cd ~/Desktop/AI
 npx get-shit-done-cc --claude --local
-# GSD v1.29.0 confirmed working on this machine
 ```
 
 ## Context7

@@ -58,9 +58,18 @@ sed -i '' "s|\$HOME|$HOME|g" ~/.claude/settings.json
 
 ---
 
-## Step 5 — Install GSD
+## Step 5 — Install GSD2 + GSD v1
 
-GSD (get-shit-done-cc) installs into the project directory and creates hooks in `~/.claude/hooks/` automatically.
+### GSD2 (primary — standalone autonomous agent)
+
+```bash
+npm install -g gsd-pi@latest
+gsd --version   # v2.50.0+
+```
+
+GSD2 runs as its own CLI process, independent of Claude Code. See `gsd/README.md` for usage.
+
+### GSD v1 (hooks + slash commands for Claude Code)
 
 ```bash
 cd ~/Desktop/AI
@@ -68,9 +77,9 @@ npx get-shit-done-cc --claude --local
 ```
 
 This installs:
-- `~/Desktop/AI/.claude/` — GSD workspace with hooks, agents, commands
-- `~/.claude/hooks/*.js` — GSD hooks (SessionStart, PreToolUse, PostToolUse, statusLine)
-- `~/.claude/commands/gsd/` — 57 GSD slash commands
+- `~/Desktop/AI/.claude/` — GSD v1 workspace with hooks, agents, commands
+- `~/.claude/hooks/*.js` — GSD v1 hooks (SessionStart, PreToolUse, PostToolUse, statusLine)
+- `~/.claude/commands/gsd/` — 57 GSD v1 slash commands
 
 > ✅ After this, `workspace/settings.json` in this repo matches `~/Desktop/AI/.claude/settings.json` exactly.
 
