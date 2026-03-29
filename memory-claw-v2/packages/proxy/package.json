@@ -1,0 +1,11 @@
+{
+  "name": "memory-claw-v2-codex-proxy",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "OpenAI-compatible chat/completions proxy backed by codex exec for memory-claw-v2",
+  "scripts": {
+    "start": "node server.mjs",
+    "probe": "node test/probe-chat-completions.mjs"
+  }
+}

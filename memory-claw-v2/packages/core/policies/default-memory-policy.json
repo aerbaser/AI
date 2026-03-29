@@ -1,0 +1,66 @@
+{
+  "version": "0.1.0",
+  "stack": {
+    "sessionLayer": {
+      "engine": "lossless-claw",
+      "role": "session-continuity-and-compaction",
+      "canonicalTruth": false
+    },
+    "primaryLongTermMemory": {
+      "engine": "engram",
+      "role": "durable-semantic-memory",
+      "writeModel": "openai-codex/gpt-5.4-mini",
+      "embeddingProvider": "voyage",
+      "embeddingModel": "voyage-3-large"
+    },
+    "knowledgeLayer": {
+      "engine": "qmd",
+      "role": "curated-markdown-retrieval",
+      "defaultQueryMode": "search",
+      "allowedSources": [
+        "shared-memory",
+        "runbooks",
+        "protocols",
+        "handoffs",
+        "postmortems",
+        "memory-md"
+      ]
+    },
+    "graphResearchLayer": {
+      "engine": "graph-memory",
+      "role": "experimental-retrieval-track",
+      "defaultEnabled": false
+    }
+  },
+  "ingestion": {
+    "automatic": true,
+    "sources": [
+      "conversation",
+      "tool-call",
+      "task-state-change",
+      "commit",
+      "pull-request",
+      "decision",
+      "postmortem",
+      "shared-doc-update"
+    ],
+    "promotionRules": {
+      "shared": [
+        "decision",
+        "incident-fix",
+        "protocol",
+        "runbook",
+        "handoff"
+      ]
+    }
+  },
+  "retrieval": {
+    "staged": true,
+    "steps": [
+      "shared-operational-memory",
+      "primary-memory",
+      "qmd-docs",
+      "deep-retrieval-if-needed"
+    ]
+  }
+}
