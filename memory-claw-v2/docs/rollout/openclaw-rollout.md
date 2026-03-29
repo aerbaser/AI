@@ -1,0 +1,52 @@
+# OpenClaw Rollout
+
+This rollout is for teams that want all agents on one memory policy without depending on manual note taking.
+
+## Target state
+
+- one shared operational corpus
+- one primary long-term memory engine
+- one embedding space
+- one automatic ingestion pipeline
+- one OpenClaw policy for all agents
+
+## Rollout phases
+
+### Phase 1: Publish and validate the toolkit
+
+- install the proxy
+- render the OpenClaw config overlay
+- verify benchmark tests
+- verify the proxy and QMD wrapper work locally
+
+### Phase 2: Apply the common policy
+
+- set the same `memorySearch` policy for all agents
+- disable session-heavy semantic memory defaults
+- point all agents at the same `shared-memory` path
+- keep `LCM` only for session continuity
+
+### Phase 3: Enable automatic ingestion
+
+- subscribe to conversation, tool, and task events
+- classify events into `private`, `shared`, `docs`, or `discard`
+- promote operational facts into shared-memory automatically
+
+### Phase 4: Reindex and validate
+
+- rebuild the primary long-term memory index
+- rebuild QMD docs index
+- compare latency and token cost against the baseline
+
+### Phase 5: Bring the secondary agents onto the same corpus
+
+- keep private overlays per agent
+- keep the shared corpus identical for all agents
+- validate that specialist agents can recall the same shared decisions as the main agent
+
+## Hard rules
+
+- do not let raw sessions become the default semantic corpus
+- do not run multiple primary memory systems at once
+- do not rely on agents to remember to write critical facts
+- do not mix multiple embedding spaces in one primary index

@@ -1,0 +1,48 @@
+{
+  "memory": {
+    "backend": "qmd",
+    "citations": "auto",
+    "qmd": {
+      "command": "~/.openclaw/bin/qmd-voyage",
+      "searchMode": "search",
+      "includeDefaultMemory": true,
+      "sessions": {
+        "enabled": false
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "openclaw-engram": {
+        "config": {
+          "memoryOsPreset": "balanced",
+          "qmdEnabled": true,
+          "qmdDaemonEnabled": true,
+          "qmdPath": "~/.openclaw/bin/qmd-voyage",
+          "lcmEnabled": true,
+          "localLlmEnabled": true,
+          "localLlmUrl": "http://127.0.0.1:4321",
+          "localLlmModel": "openai-codex/gpt-5.4-mini",
+          "captureMode": "hybrid",
+          "recallBudgetChars": 24000
+        }
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "memorySearch": {
+        "enabled": true,
+        "sources": [
+          "memory"
+        ],
+        "extraPaths": [
+          "~/.openclaw/shared-memory"
+        ],
+        "provider": "voyage",
+        "model": "voyage-3-large",
+        "fallback": "local"
+      }
+    }
+  }
+}

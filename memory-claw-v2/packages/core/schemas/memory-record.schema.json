@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://memory-claw-v2.dev/schemas/memory-record.schema.json",
+  "title": "MemoryRecord",
+  "type": "object",
+  "required": [
+    "id",
+    "scope",
+    "kind",
+    "summary",
+    "source",
+    "created_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "private",
+        "shared"
+      ]
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "fact",
+        "decision",
+        "lesson",
+        "preference",
+        "handoff",
+        "runbook",
+        "summary"
+      ]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "ref": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": true
+}

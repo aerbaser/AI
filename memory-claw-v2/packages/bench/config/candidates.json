@@ -1,0 +1,46 @@
+{
+  "candidates": [
+    {
+      "id": "baseline-none",
+      "label": "No memory augmentation",
+      "enabled": true,
+      "runner": "baseline_none",
+      "notes": "Control group for token and recall comparisons."
+    },
+    {
+      "id": "current-prod",
+      "label": "Current production stack",
+      "enabled": true,
+      "runner": "current_prod",
+      "notes": "Current live architecture before cleanup."
+    },
+    {
+      "id": "current-clean",
+      "label": "Current stack with cleaned corpus and updated defaults",
+      "enabled": true,
+      "runner": "current_clean",
+      "notes": "Same architecture, cleaned data and policy."
+    },
+    {
+      "id": "engram-native-linux",
+      "label": "Linux-native Engram lane",
+      "enabled": true,
+      "runner": "engram_linux",
+      "notes": "Primary replacement track."
+    },
+    {
+      "id": "graph-memory",
+      "label": "Graph memory",
+      "enabled": true,
+      "runner": "graph_memory",
+      "notes": "Experimental graph retrieval track."
+    },
+    {
+      "id": "memos-local",
+      "label": "MemOS local",
+      "enabled": true,
+      "runner": "memos_local",
+      "notes": "Operational control candidate."
+    }
+  ]
+}

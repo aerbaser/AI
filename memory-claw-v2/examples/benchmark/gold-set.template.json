@@ -1,0 +1,37 @@
+[
+  {
+    "question": "What memory layer stores durable agent and user facts?",
+    "expected_facts": [
+      "Engram",
+      "primary long-term memory"
+    ],
+    "tags": [
+      "architecture",
+      "memory"
+    ]
+  },
+  {
+    "question": "Why should raw sessions not be the default semantic corpus?",
+    "expected_facts": [
+      "noise",
+      "token bloat",
+      "latency"
+    ],
+    "tags": [
+      "quality",
+      "retrieval"
+    ]
+  },
+  {
+    "question": "What is QMD responsible for in memory-claw-v2?",
+    "expected_facts": [
+      "curated markdown",
+      "shared-memory",
+      "knowledge retrieval"
+    ],
+    "tags": [
+      "qmd",
+      "docs"
+    ]
+  }
+]

@@ -1,0 +1,12 @@
+[project]
+name = "memory-claw-v2"
+version = "0.1.0"
+description = "Portable OpenClaw memory toolkit and benchmark harness"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = [
+  "packages/bench/tests",
+  "packages/integrations/openclaw/tests",
+]

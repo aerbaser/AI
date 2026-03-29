@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://memory-claw-v2.dev/schemas/memory-event.schema.json",
+  "title": "MemoryEvent",
+  "type": "object",
+  "required": [
+    "event_id",
+    "event_type",
+    "timestamp"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "conversation",
+        "tool-call",
+        "task-state-change",
+        "commit",
+        "pull-request",
+        "decision",
+        "postmortem",
+        "doc-update"
+      ]
+    },
+    "agent_id": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "private",
+        "shared",
+        "unknown"
+      ]
+    },
+    "payload": {
+      "type": "object"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": true
+}
