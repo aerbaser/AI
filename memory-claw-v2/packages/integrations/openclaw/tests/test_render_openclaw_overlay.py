@@ -19,7 +19,7 @@ def test_apply_overlay_sets_safe_memory_defaults(monkeypatch) -> None:
 
     assert rendered["plugins"]["allow"] == ["lossless-claw", "openclaw-engram"]
     assert rendered["plugins"]["entries"]["lossless-claw"]["enabled"] is True
-    assert rendered["plugins"]["entries"]["memos-capture"]["enabled"] is False
+    assert "memos-capture" not in rendered["plugins"]["entries"]
     defaults = rendered["agents"]["defaults"]["memorySearch"]
     assert defaults["sources"] == ["memory"]
     assert defaults["extraPaths"] == [str(Path("~/.openclaw/shared-memory").expanduser())]
@@ -27,6 +27,7 @@ def test_apply_overlay_sets_safe_memory_defaults(monkeypatch) -> None:
     assert defaults["fallback"] == "local"
     assert defaults["remote"]["apiKey"] == "test-key"
     assert rendered["plugins"]["entries"]["openclaw-engram"]["config"]["lcmEnabled"] is False
+    assert rendered["plugins"]["entries"]["openclaw-engram"]["config"]["rerankEnabled"] is False
     assert rendered["plugins"]["entries"]["openclaw-engram"]["config"]["sharedContextEnabled"] is True
     assert rendered["plugins"]["entries"]["openclaw-engram"]["config"]["sharedContextDir"] == str(
         Path("~/.openclaw/shared-memory").expanduser()
@@ -40,6 +41,22 @@ def test_apply_overlay_sets_safe_memory_defaults(monkeypatch) -> None:
         }
     ]
     assert rendered["memory"]["qmd"]["sessions"]["enabled"] is False
+
+
+def test_apply_overlay_preserves_enabled_channels_in_allowlist(monkeypatch) -> None:
+    monkeypatch.delenv("VOYAGE_API_KEY", raising=False)
+    args = parse_args(["--config", "ignored"])
+    cfg = {
+        "plugins": {"allow": ["telegram"]},
+        "channels": {
+            "telegram": {"enabled": True},
+            "discord": {"enabled": False},
+        },
+    }
+
+    rendered = apply_overlay(cfg, args)
+
+    assert rendered["plugins"]["allow"] == ["lossless-claw", "openclaw-engram", "telegram"]
 
 
 def test_renderer_writes_json(tmp_path: Path, monkeypatch) -> None:

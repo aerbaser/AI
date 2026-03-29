@@ -21,11 +21,13 @@ This rollout is for teams that want all agents on one memory policy without depe
 
 ### Phase 2: Apply the common policy
 
+- preserve the enabled channel plugins when rendering `plugins.allow`
 - set the same `memorySearch` policy for all agents
 - disable session-heavy semantic memory defaults
 - point all agents at the same `shared-memory` path
 - keep `lossless-claw` only for session continuity
 - keep `Engram` as the primary memory layer with `lcmEnabled=false`
+- explicitly disable Engram rerank on the reply path unless a separate fast LLM queue is available
 
 ### Phase 3: Enable automatic ingestion
 

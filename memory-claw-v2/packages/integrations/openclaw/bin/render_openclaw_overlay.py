@@ -30,12 +30,20 @@ def apply_overlay(cfg: dict, args: argparse.Namespace) -> dict:
     voyage_api_key = os.environ.get(args.voyage_api_key_env, "").strip()
 
     plugins = cfg.setdefault("plugins", {})
-    plugins["allow"] = ["lossless-claw", "openclaw-engram"]
+    allow = set(plugins.get("allow") or [])
+    allow.update({"lossless-claw", "openclaw-engram"})
+    channels = cfg.get("channels") if isinstance(cfg.get("channels"), dict) else {}
+    for channel_id, channel_cfg in channels.items():
+        if not isinstance(channel_cfg, dict):
+            continue
+        if channel_cfg.get("enabled", True) is not False:
+            allow.add(str(channel_id))
+    plugins["allow"] = sorted(allow)
     entries = plugins.setdefault("entries", {})
     entries.setdefault("lossless-claw", {})["enabled"] = True
-    entries.setdefault("memos-capture", {})["enabled"] = False
     engram = entries.setdefault("openclaw-engram", {}).setdefault("config", {})
     engram["memoryOsPreset"] = "balanced"
+    engram["rerankEnabled"] = False
     engram["qmdEnabled"] = True
     engram["qmdDaemonEnabled"] = True
     engram["qmdPath"] = qmd_command

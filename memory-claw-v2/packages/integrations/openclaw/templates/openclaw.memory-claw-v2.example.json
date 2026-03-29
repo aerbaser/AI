@@ -21,18 +21,17 @@
   "plugins": {
     "allow": [
       "lossless-claw",
-      "openclaw-engram"
+      "openclaw-engram",
+      "telegram"
     ],
     "entries": {
       "lossless-claw": {
         "enabled": true
       },
-      "memos-capture": {
-        "enabled": false
-      },
       "openclaw-engram": {
         "config": {
           "memoryOsPreset": "balanced",
+          "rerankEnabled": false,
           "qmdEnabled": true,
           "qmdDaemonEnabled": true,
           "qmdPath": "~/.openclaw/bin/qmd-voyage",
