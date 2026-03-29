@@ -49,6 +49,10 @@ This layer should not default to raw session dumps.
   - runbooks
   - cross-agent rules
   - shared incidents and fixes
+- Delivery path:
+  - stable source docs live in `shared-memory`
+  - a generated `roundtable` snapshot feeds `Engram sharedContext`
+  - live inboxes, raw logs, and append-only spools stay outside the prompt path
 
 ## Design Rules
 
@@ -58,3 +62,5 @@ This layer should not default to raw session dumps.
 - shared-memory is common truth, not a scratchpad
 - automatic ingestion is required because agents miss important facts
 - retrieval must be budgeted for latency and token size
+- operational truth should be synthesized automatically into a compact shared snapshot
+- do not inject live inbox files or noisy append-only logs directly into the recall path

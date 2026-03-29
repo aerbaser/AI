@@ -34,12 +34,16 @@ This rollout is for teams that want all agents on one memory policy without depe
 - subscribe to conversation, tool, and task events
 - classify events into `private`, `shared`, `docs`, or `discard`
 - promote operational facts into shared-memory automatically
+- generate a compact `shared-memory/roundtable/*.md` snapshot from stable docs such as `decisions.md`, `handoffs.md`, `open-loops.md`, and `protocols/*`
+- make the roundtable sync hash-gated so scheduled runs call the LLM only when source docs changed
+- keep live inboxes, feedback spools, and raw communication logs out of the shared prompt path
 
 ### Phase 4: Reindex and validate
 
 - rebuild the primary long-term memory index
 - rebuild QMD docs index
 - compare latency and token cost against the baseline
+- verify that `sharedCtx` stays in a low-latency budget after the roundtable snapshot is added
 
 ### Phase 5: Bring the secondary agents onto the same corpus
 
@@ -53,3 +57,4 @@ This rollout is for teams that want all agents on one memory policy without depe
 - do not run multiple primary memory systems at once
 - do not rely on agents to remember to write critical facts
 - do not mix multiple embedding spaces in one primary index
+- do not point shared-context recall directly at uncurated inboxes or append-only logs
