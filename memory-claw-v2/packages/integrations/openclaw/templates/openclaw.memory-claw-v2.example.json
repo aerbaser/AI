@@ -5,26 +5,48 @@
     "qmd": {
       "command": "~/.openclaw/bin/qmd-voyage",
       "searchMode": "search",
-      "includeDefaultMemory": true,
+      "includeDefaultMemory": false,
+      "paths": [
+        {
+          "path": "~/.openclaw/shared-memory",
+          "name": "shared-memory",
+          "pattern": "**/*.md"
+        }
+      ],
       "sessions": {
         "enabled": false
       }
     }
   },
   "plugins": {
+    "allow": [
+      "lossless-claw",
+      "openclaw-engram"
+    ],
     "entries": {
+      "lossless-claw": {
+        "enabled": true
+      },
+      "memos-capture": {
+        "enabled": false
+      },
       "openclaw-engram": {
         "config": {
           "memoryOsPreset": "balanced",
           "qmdEnabled": true,
           "qmdDaemonEnabled": true,
           "qmdPath": "~/.openclaw/bin/qmd-voyage",
-          "lcmEnabled": true,
+          "lcmEnabled": false,
           "localLlmEnabled": true,
           "localLlmUrl": "http://127.0.0.1:4321",
           "localLlmModel": "openai-codex/gpt-5.4-mini",
           "captureMode": "hybrid",
-          "recallBudgetChars": 24000
+          "recallBudgetChars": 32000,
+          "conversationIndexEnabled": true,
+          "sharedContextEnabled": true,
+          "sharedContextDir": "~/.openclaw/shared-memory",
+          "sharedContextMaxInjectChars": 8000,
+          "modelSource": "plugin"
         }
       }
     }

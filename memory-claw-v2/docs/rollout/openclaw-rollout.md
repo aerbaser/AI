@@ -24,7 +24,8 @@ This rollout is for teams that want all agents on one memory policy without depe
 - set the same `memorySearch` policy for all agents
 - disable session-heavy semantic memory defaults
 - point all agents at the same `shared-memory` path
-- keep `LCM` only for session continuity
+- keep `lossless-claw` only for session continuity
+- keep `Engram` as the primary memory layer with `lcmEnabled=false`
 
 ### Phase 3: Enable automatic ingestion
 

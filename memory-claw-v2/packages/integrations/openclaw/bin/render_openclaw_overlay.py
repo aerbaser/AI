@@ -30,19 +30,26 @@ def apply_overlay(cfg: dict, args: argparse.Namespace) -> dict:
     voyage_api_key = os.environ.get(args.voyage_api_key_env, "").strip()
 
     plugins = cfg.setdefault("plugins", {})
+    plugins["allow"] = ["lossless-claw", "openclaw-engram"]
     entries = plugins.setdefault("entries", {})
+    entries.setdefault("lossless-claw", {})["enabled"] = True
+    entries.setdefault("memos-capture", {})["enabled"] = False
     engram = entries.setdefault("openclaw-engram", {}).setdefault("config", {})
     engram["memoryOsPreset"] = "balanced"
     engram["qmdEnabled"] = True
     engram["qmdDaemonEnabled"] = True
     engram["qmdPath"] = qmd_command
-    engram["lcmEnabled"] = True
+    engram["lcmEnabled"] = False
     engram["localLlmEnabled"] = True
     engram["localLlmUrl"] = args.proxy_url
     engram["localLlmModel"] = args.proxy_model
     engram["captureMode"] = "hybrid"
-    engram["recallBudgetChars"] = 24000
+    engram["recallBudgetChars"] = 32000
     engram["conversationIndexEnabled"] = True
+    engram["sharedContextEnabled"] = True
+    engram["sharedContextDir"] = shared_memory_path
+    engram["sharedContextMaxInjectChars"] = 8000
+    engram["modelSource"] = "plugin"
 
     memory = cfg.setdefault("memory", {})
     memory["backend"] = "qmd"
@@ -50,7 +57,14 @@ def apply_overlay(cfg: dict, args: argparse.Namespace) -> dict:
     memory_qmd = memory.setdefault("qmd", {})
     memory_qmd["command"] = qmd_command
     memory_qmd["searchMode"] = "search"
-    memory_qmd["includeDefaultMemory"] = True
+    memory_qmd["includeDefaultMemory"] = False
+    memory_qmd["paths"] = [
+        {
+            "path": shared_memory_path,
+            "name": "shared-memory",
+            "pattern": "**/*.md",
+        }
+    ]
     memory_qmd["sessions"] = {"enabled": False}
     memory_qmd["update"] = {
         "interval": "15m",
